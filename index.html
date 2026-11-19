@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#16060b">
+<title>تحدّي العراق 3D</title>
+<style>
+*{box-sizing:border-box}
+:root{--red:#ed1833;--gold:#ffc95c}
+body{margin:0;min-height:100vh;color:#fff;font-family:Tahoma,Arial,sans-serif;background:radial-gradient(ellipse at 50% 15%,#63202b,#250b14 45%,#090409)}
+.scene{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:-1}
+.cube{position:absolute;width:65px;height:65px;border:2px solid #ff52604a;background:#ff1d3510;box-shadow:0 0 35px #ff193333,inset 0 0 25px #ff193322;transform:rotate(35deg) skew(-8deg);animation:float 8s ease-in-out infinite alternate}
+.cube:nth-child(1){top:15%;left:7%;width:75px;height:75px}
+.cube:nth-child(2){top:58%;right:5%;width:45px;height:45px;animation-delay:2s}
+.cube:nth-child(3){bottom:8%;left:18%;width:30px;height:30px;animation-delay:3s}
+.ring{position:absolute;width:170px;height:170px;border:2px solid #ffc95c33;border-radius:50%;top:32%;right:-110px;animation:spin 15s linear infinite}
+@keyframes float{to{transform:translateY(-35px) rotate(130deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{transform:scale(.75);opacity:0}to{transform:scale(1);opacity:1}}
+.wrap{width:min(96%,900px);margin:auto;padding:24px 0 45px}
+header{text-align:center;padding:18px 0 25px}
+h1{font-size:38px;margin:8px 0;text-shadow:0 3px 0 #750b1b,0 0 25px #ff334f}
+.subtitle{color:#f8c6cc;font-size:12px;letter-spacing:1px}
+.panel{position:relative;padding:28px;border-radius:24px;background:linear-gradient(145deg,#ffffff1c,#ffffff07 45%,#00000030);border:1px solid #ffffff35;box-shadow:0 20px 45px #0009,inset 0 1px 1px #ffffff35;backdrop-filter:blur(15px)}
+.hidden{display:none!important}
+.intro{text-align:center}
+.intro h2{font-size:24px;color:var(--gold)}
+.intro p{color:#f0dadd;line-height:2;font-size:14px}
+.btn{width:100%;border:1px solid #ffabb3;border-radius:15px;padding:15px 18px;margin-top:11px;color:white;font-size:17px;font-weight:bold;cursor:pointer;background:linear-gradient(180deg,#ff5366,#df102d 48%,#93091e);box-shadow:0 6px 0 #560714,0 12px 22px #ed183355;text-shadow:0 2px 3px #68000c}
+.btn:active{transform:translateY(4px)}
+.secondary{background:linear-gradient(180deg,#777,#343434);border-color:#aaa;box-shadow:0 6px 0 #181818}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:15px}
+.stat{text-align:center;padding:11px 3px;border-radius:14px;background:linear-gradient(145deg,#ffffff20,#ffffff08);border:1px solid #ffffff2b;font-size:12px;color:#f5dfe1}
+.stat strong{display:block;font-size:19px;margin-top:7px;color:#fff}
+.progress-wrap{height:9px;border-radius:20px;background:#0008;overflow:hidden;margin:12px 0 18px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#ff263f,#ffc95c);transition:.4s}
+.number{color:var(--gold);font-size:13px;margin-bottom:12px}
+.question{font-size:24px;line-height:1.8;margin:0 0 18px}
+.timer-wrap{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.timer{width:52px;height:52px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:23px;font-weight:bold;background:radial-gradient(circle,#49121d 48%,#e92343 51%,#7c0a1c 75%);border:3px solid #ff9aa8;box-shadow:0 0 18px #ff244a88}
+.timer-bar{height:9px;background:#0008;border-radius:20px;flex:1;overflow:hidden}
+.timer-progress{height:100%;width:100%;background:linear-gradient(90deg,#ed1833,#ffc95c);transition:width 1s linear}
+.answers{display:grid;gap:11px}
+.answer{width:100%;text-align:right;padding:19px;border-radius:14px;color:white;font-size:15px;cursor:pointer;background:linear-gradient(145deg,#ffffff20,#ffffff08);border:1px solid #ffffff32;box-shadow:0 5px 0 #080308}
+.answer:disabled{opacity:1}
+.answer.correct{background:linear-gradient(145deg,#24b875,#075d39);border-color:#8dffbf}
+.answer.wrong{background:linear-gradient(145deg,#f04b5e,#85091c);border-color:#ff9ba5}
+.feedback{text-align:center;min-height:26px;margin:14px 0;font-weight:bold;color:var(--gold)}
+.result{text-align:center}
+.result .big{font-size:65px}
+.result h2,.page-title{font-size:25px;color:var(--gold);text-align:center}
+.result p{line-height:2;color:#f2dadd}
+.share-preview{display:block;width:min(100%,360px);aspect-ratio:9/16;object-fit:contain;margin:18px auto 8px;border-radius:18px;border:1px solid #ffc95c88;box-shadow:0 12px 35px #0009;background:#16060b}
+.share-note{font-size:12px;color:#f5dfe1;margin:8px 0}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.stat-card{padding:17px 10px;text-align:center;border-radius:16px;background:#ffffff12;border:1px solid #ffffff2b}
+.stat-card span{display:block;color:#f4c9ce;font-size:13px}
+.stat-card strong{display:block;color:var(--gold);font-size:25px;margin-top:8px}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.nav button{padding:11px 3px;border-radius:13px;border:1px solid #ffffff35;background:#ffffff12;color:#fff;font-weight:bold;font-size:13px}
+.nav button.active{background:linear-gradient(180deg,#ff5366,#a0001b);border-color:#ffabb3}
+.contact-card{padding:15px;margin:12px 0;border:1px solid #ffffff30;border-radius:16px;background:#ffffff10;text-align:center}
+.contact-card strong{display:block;color:var(--gold);font-size:16px;margin-bottom:7px}
+.contact-card p{color:#f0dadd;font-size:13px;line-height:1.8;margin:6px 0 12px}
+.contact-link{display:block;text-decoration:none;text-align:center;border-radius:13px;padding:13px;margin-top:9px;color:#fff;font-weight:bold;background:linear-gradient(180deg,#ff5366,#a0001b);border:1px solid #ffabb3}
+.contact-link.email{background:linear-gradient(180deg,#777,#343434);border-color:#aaa}
+footer{text-align:center;color:#cbb2b6;font-size:12px;line-height:2.2;margin:22px 0 8px}
+footer a{color:var(--gold);text-decoration:none;margin:0 5px}
+.overlay{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.show{display:flex}
+.popup{width:min(100%,350px);padding:27px 20px;text-align:center;border-radius:24px;background:linear-gradient(145deg,#801329,#210710);border:1px solid #ff9aa8;box-shadow:0 20px 60px #000;animation:pop .25s}
+.popup .emoji{font-size:55px}
+.popup h2{color:var(--gold)}
+@media(max-width:600px){
+.wrap{width:96%;padding:14px 0 30px}
+header{padding:12px 0 18px}
+h1{font-size:32px}
+.panel{padding:20px}
+.question{font-size:21px}
+.answer{padding:16px}
+.nav{gap:6px}
+.nav button{font-size:12px;padding:12px 2px}
+}
+@media(min-width:700px){
+.intro p{font-size:17px}
+.btn{max-width:100%;padding:18px;font-size:18px}
+.stat{padding:16px;font-size:14px}
+.stat strong{font-size:23px}
+.answer{font-size:18px;padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="scene">
+<div class="cube"></div><div class="cube"></div><div class="cube"></div><div class="ring"></div>
+</div>
+
+<div class="wrap">
+<header>
+<h1>تحدّي العراق</h1>
+<div class="subtitle">THE IRAQ CHALLENGE • 3D EDITION</div>
+</header>
+
+<nav class="nav">
+<button id="navHome" class="active" onclick="showPage('home')">🏠 الرئيسية</button>
+<button id="navStats" onclick="showPage('stats')">📊 إحصائياتي</button>
+<button id="navGame" onclick="startGame()">🎮 العب</button>
+<button id="navSupport" onclick="showPage('support')">💬 الدعم</button>
+</nav>
+
+<section id="home" class="panel intro">
+<h2>🔥 هل أنت مستعد؟</h2>
+<p>اختبر ذكاءك ومعلوماتك العامة.<br>عندك 3 قلوب، وكل 5 إجابات صحيحة تحصل على قلب إضافي.<br>جاوب خلال 10 ثوانٍ قبل انتهاء الوقت!</p>
+<button class="btn" onclick="startGame()">ابدأ التحدّي 🎮</button>
+<button class="btn secondary" onclick="showPage('stats')">عرض إحصائياتي 📊</button>
+</section>
+
+<section id="stats" class="panel hidden">
+<h2 class="page-title">📊 إحصائياتي</h2>
+<p style="text-align:center;color:#f0dadd;line-height:1.9">تابع إنجازاتك وتقدّمك في تحدّي العراق</p>
+<div class="stat-grid">
+<div class="stat-card"><span>🏆 أفضل نتيجة</span><strong id="bestStat">0</strong></div>
+<div class="stat-card"><span>🎮 مرات اللعب</span><strong id="gamesStat">0</strong></div>
+<div class="stat-card"><span>⭐ مجموع النقاط</span><strong id="totalStat">0</strong></div>
+<div class="stat-card"><span>✅ إجابات صحيحة</span><strong id="correctStat">0</strong></div>
+</div>
+<button class="btn" onclick="startGame()">ابدأ تحدياً جديداً 🎮</button>
+<button class="btn secondary" onclick="showPage('home')">العودة للرئيسية</button>
+</section>
+
+<section id="support" class="panel hidden">
+<h2 class="page-title">💬 الدعم الفني</h2>
+<p style="text-align:center;color:#f0dadd;line-height:1.9">عندك استفسار أو واجهتك مشكلة باللعبة؟ تواصل ويانه، ونساعدك بأقرب وقت.</p>
+<div class="contact-card">
+<strong>📱 واتساب الدعم الفني</strong>
+<p>راسلنا مباشرة إذا عندك سؤال أو تريد تبلغ عن مشكلة.</p>
+<a class="contact-link" href="https://wa.me/9647854009838?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%A8%D8%AE%D8%B5%D9%88%D8%B5%20%D8%AA%D8%AD%D8%AF%D9%8A%20%D8%A7%D9%84%D8%B9%D8%B1%D8%A7%D9%82%203D" target="_blank" rel="noopener">راسلنا على واتساب</a>
+</div>
+<div class="contact-card">
+<strong>✉️ البريد الإلكتروني</strong>
+<p>تگدر ترسل استفسارك أو اقتراحك على البريد الإلكتروني.</p>
+<a class="contact-link email" href="mailto:qwqwas135@gmail.com?subject=%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%AD%D9%88%D9%84%20%D8%AA%D8%AD%D8%AF%D9%91%D9%8A%20%D8%A7%D9%84%D8%B9%D8%B1%D8%A7%D9%82%203D">إرسال بريد إلكتروني</a>
+</div>
+<button class="btn secondary" onclick="showPage('home')">العودة للرئيسية</button>
+</section>
+
+<section id="game" class="hidden">
+<div class="stats">
+<div class="stat">❤️ القلوب<strong id="hearts">❤️❤️❤️</strong></div>
+<div class="stat">⭐ النقاط<strong id="score">0</strong></div>
+<div class="stat">✅ الصحيحة<strong id="correctCount">0</strong></div>
+</div>
+<div class="panel">
+<div class="progress-wrap"><div id="progress" class="progress"></div></div>
+<div id="questionNumber" class="number">السؤال 1 من 30</div>
+<div class="timer-wrap">
+<div id="timer" class="timer">10</div>
+<div class="timer-bar"><div id="timerProgress" class="timer-progress"></div></div>
+</div>
+<h2 id="question" class="question"></h2>
+<div id="answers" class="answers"></div>
+<div id="feedback" class="feedback"></div>
+<button id="next" class="btn hidden" onclick="nextQuestion()">السؤال التالي ←</button>
+</div>
+</section>
+
+<section id="result" class="panel result hidden">
+<div class="big" id="resultEmoji">🏆</div>
+<h2 id="resultTitle">انتهى التحدّي!</h2>
+<p id="resultText"></p>
+<img id="sharePreview" class="share-preview hidden" alt="بطاقة نتيجة تحدّي العراق">
+<p id="shareNote" class="share-note">شارك نتيجتك وخلي أصدقاءك يتحدّوك!</p>
+<button id="shareBtn" class="btn" onclick="shareResult()">📲 مشاركة النتيجة بالستوري</button>
+<button class="btn secondary" onclick="saveResultImage()">⬇️ حفظ صورة النتيجة</button>
+<button class="btn" onclick="startGame()">العب مرة ثانية 🔄</button>
+<button class="btn secondary" onclick="showPage('home')">الرئيسية</button>
+</section>
+
+<footer>
+<div>تطوير وبرمجة: <strong>المهندس علي أسعد</strong></div>
+<div><a href="https://www.instagram.com/z933w/" target="_blank" rel="noopener">Instagram</a> | <a href="https://www.tiktok.com/@z933w" target="_blank" rel="noopener">TikTok</a></div>
+<div>جميع الحقوق محفوظة © تحدّي العراق</div>
+</footer>
+</div>
+
+<div id="overlay" class="overlay">
+<div class="popup">
+<div id="popupEmoji" class="emoji">🎉</div>
+<h2 id="popupTitle">إجابة صحيحة!</h2>
+<p id="popupText">أحسنت!</p>
+<button class="btn" onclick="closePopup()">متابعة</button>
+</div>
+</div>
+
+<script>
+const questions=[
+{q:"ما عاصمة العراق؟",a:["البصرة","بغداد","النجف","الموصل"],c:1},
+{q:"كم عدد محافظات العراق؟",a:["15","16","18","20"],c:2},
+{q:"ما النهران الرئيسيان في العراق؟",a:["دجلة والفرات","النيل والفرات","دجلة والنيل","الخابور والعاصي"],c:0},
+{q:"ما العملة الرسمية للعراق؟",a:["الدولار","الدينار العراقي","الريال","الليرة"],c:1},
+{q:"في أي محافظة تقع مدينة أور الأثرية؟",a:["النجف","ذي قار","نينوى","بابل"],c:1},
+{q:"ما أعلى قمة جبلية في العراق؟",a:["جبل سنجار","جبل كورك","حصاروست","جبل مكحول"],c:2},
+{q:"ما ألوان علم العراق؟",a:["أحمر وأبيض وأسود","أخضر وأبيض وأزرق","أحمر وأصفر وأخضر","أبيض وأزرق وأسود"],c:0},
+{q:"ما أكبر محافظة عراقية من حيث المساحة؟",a:["النجف","الأنبار","البصرة","نينوى"],c:1},
+{q:"أين تقع أهوار العراق؟",a:["جنوب العراق","شمال العراق","غرب العراق","وسط العراق فقط"],c:0},
+{q:"ما المسطح المائي الذي يطل عليه العراق؟",a:["البحر الأحمر","البحر المتوسط","الخليج العربي","بحر قزوين"],c:2},
+{q:"في أي محافظة تقع مدينة بابل الأثرية؟",a:["بابل","كربلاء","واسط","ديالى"],c:0},
+{q:"ما عاصمة إقليم كردستان العراق؟",a:["السليمانية","دهوك","أربيل","حلبجة"],c:2},
+{q:"كم عدد أيام السنة العادية؟",a:["360","365","366","364"],c:1},
+{q:"ما الكوكب المعروف بالكوكب الأحمر؟",a:["الزهرة","المريخ","المشتري","عطارد"],c:1},
+{q:"كم عدد أضلاع المثلث؟",a:["2","3","4","5"],c:1},
+{q:"ما أكبر محيط في العالم؟",a:["الأطلسي","الهندي","الهادئ","المتجمد"],c:2},
+{q:"ما الحيوان المعروف بسفينة الصحراء؟",a:["الحصان","الجمل","الفيل","الغزال"],c:1},
+{q:"ما الغاز الذي يحتاجه الإنسان للتنفس؟",a:["النيتروجين","الأوكسجين","الهيدروجين","ثاني أوكسيد الكربون"],c:1},
+{q:"كم عدد قارات العالم وفق التقسيم الشائع؟",a:["5","6","7","8"],c:2},
+{q:"ما أسرع حيوان بري؟",a:["الأسد","الفهد","النمر","الغزال"],c:1},
+{q:"ما عاصمة فرنسا؟",a:["روما","باريس","مدريد","لندن"],c:1},
+{q:"كم دقيقة في الساعة؟",a:["30","45","60","90"],c:2},
+{q:"ما العضو الذي يضخ الدم في جسم الإنسان؟",a:["الرئة","القلب","الكبد","الكلية"],c:1},
+{q:"ما أكبر كوكب في المجموعة الشمسية؟",a:["الأرض","زحل","المشتري","نبتون"],c:2},
+{q:"ما اللغة الرسمية في العراق؟",a:["العربية","التركية فقط","الفارسية","الإنجليزية"],c:0},
+{q:"في أي قارة تقع العراق؟",a:["أفريقيا","آسيا","أوروبا","أستراليا"],c:1},
+{q:"ما اسم المضيق عند مدخل الخليج العربي؟",a:["مضيق هرمز","مضيق باب المندب","مضيق جبل طارق","مضيق البوسفور"],c:0},
+{q:"كم عدد أشهر السنة؟",a:["10","11","12","13"],c:2},
+{q:"ما عاصمة اليابان؟",a:["بكين","سيول","طوكيو","بانكوك"],c:2},
+{q:"ما الجهاز المسؤول عن التفكير في جسم الإنسان؟",a:["القلب","الدماغ","المعدة","الرئة"],c:1}
+];
+
+const $=id=>document.getElementById(id);
+let list=[],index=0,score=0,hearts=3,correct=0,timerInterval=null,timeLeft=10,locked=false;
+let audioContext=null,best=Number(localStorage.getItem("iraqBest")||0);
+let resultImageUrl="";
+let saved=JSON.parse(localStorage.getItem("iraqStats")||'{"games":0,"total":0,"correct":0}');
+
+function saveStats(){localStorage.setItem("iraqStats",JSON.stringify(saved));}
+function renderStats(){
+$("bestStat").textContent=best;
+$("gamesStat").textContent=saved.games;
+$("totalStat").textContent=saved.total;
+$("correctStat").textContent=saved.correct;
+}
+function showPage(page){
+clearInterval(timerInterval);closePopup();
+["home","stats","support","game","result"].forEach(id=>$(id).classList.add("hidden"));
+$(page).classList.remove("hidden");
+["navHome","navStats","navGame","navSupport"].forEach(id=>$(id).classList.remove("active"));
+if(page==="home")$("navHome").classList.add("active");
+if(page==="stats"){$("navStats").classList.add("active");renderStats();}
+if(page==="support")$("navSupport").classList.add("active");
+if(page==="game")$("navGame").classList.add("active");
+}
+function playTone(f,d,type="sine",v=.12,delay=0){
+try{
+audioContext ||= new (window.AudioContext||window.webkitAudioContext)();
+if(audioContext.state==="suspended")audioContext.resume();
+let o=audioContext.createOscillator(),g=audioContext.createGain(),s=audioContext.currentTime+delay;
+o.type=type;o.frequency.setValueAtTime(f,s);g.gain.setValueAtTime(v,s);
+g.gain.exponentialRampToValueAtTime(.001,s+d);
+o.connect(g);g.connect(audioContext.destination);o.start(s);o.stop(s+d);
+}catch(e){}
+}
+function soundCorrect(){[523,659,784].forEach((n,i)=>playTone(n,.2,"sine",.12,i*.14))}
+function soundWrong(){playTone(220,.25,"sawtooth");playTone(150,.35,"sawtooth",.1,.2)}
+function soundTick(){playTone(850,.08,"square",.045)}
+function soundHeart(){[523,659,784,1046].forEach((n,i)=>playTone(n,.2,"sine",.12,i*.12))}
+
+function startGame(){
+list=[...questions].sort(()=>Math.random()-.5);
+index=0;score=0;hearts=3;correct=0;
+showPage("game");updateStats();showQuestion();
+}
+function updateStats(){
+$("hearts").textContent="❤️".repeat(hearts)+"🖤".repeat(5-hearts);
+$("score").textContent=score;
+$("correctCount").textContent=correct;
+}
+function showQuestion(){
+clearInterval(timerInterval);closePopup();
+if(hearts<=0){endGame(false);return}
+if(index>=list.length){endGame(true);return}
+locked=false;timeLeft=10;
+$("timer").textContent=10;
+$("timerProgress").style.width="100%";
+$("questionNumber").textContent=`السؤال ${index+1} من ${list.length}`;
+$("progress").style.width=(index/list.length*100)+"%";
+$("question").textContent=list[index].q;
+$("feedback").textContent="";
+$("next").classList.add("hidden");
+$("answers").innerHTML="";
+list[index].a.forEach((answer,i)=>{
+let b=document.createElement("button");
+b.className="answer";b.textContent=answer;
+b.onclick=()=>chooseAnswer(i);
+$("answers").appendChild(b);
+});
+timerInterval=setInterval(()=>{
+timeLeft--;
+$("timer").textContent=timeLeft;
+$("timerProgress").style.width=(timeLeft/10*100)+"%";
+if(timeLeft<=5&&timeLeft>0)soundTick();
+if(timeLeft<=0){clearInterval(timerInterval);timeExpired();}
+},1000);
+}
+function disableAnswers(){document.querySelectorAll(".answer").forEach(b=>b.disabled=true)}
+function chooseAnswer(choice){
+if(locked)return;
+locked=true;clearInterval(timerInterval);disableAnswers();
+let q=list[index],buttons=document.querySelectorAll(".answer");
+if(choice===q.c){
+buttons[choice].classList.add("correct");
+correct++;score+=10;soundCorrect();
+if(correct%5===0&&hearts<5){
+hearts++;soundHeart();
+showPopup("❤️","قلب إضافي!","مبروك! حصلت على قلب إضافي.");
+}else showPopup("🎉","إجابة صحيحة!","+10 نقاط، أحسنت!");
+$("feedback").textContent="إجابة صحيحة!";
+}else{
+buttons[choice].classList.add("wrong");
+buttons[q.c].classList.add("correct");
+hearts--;soundWrong();
+$("feedback").textContent="إجابة خاطئة! الجواب الصحيح: "+q.a[q.c];
+}
+updateStats();
+$("next").classList.remove("hidden");
+}
+function timeExpired(){
+if(locked)return;
+locked=true;hearts--;soundWrong();disableAnswers();
+document.querySelectorAll(".answer")[list[index].c].classList.add("correct");
+$("feedback").textContent="انتهى الوقت! خسرت قلباً ⏰";
+updateStats();$("next").classList.remove("hidden");
+}
+function nextQuestion(){
+closePopup();index++;
+if(hearts<=0){endGame(false);return}
+showQuestion();
+}
+function showPopup(e,t,m){
+$("popupEmoji").textContent=e;
+$("popupTitle").textContent=t;
+$("popupText").textContent=m;
+$("overlay").classList.add("show");
+}
+function closePopup(){$("overlay").classList.remove("show")}
+
+function endGame(completed){
+clearInterval(timerInterval);closePopup();
+$("game").classList.add("hidden");
+$("result").classList.remove("hidden");
+$("navGame").classList.remove("active");
+saved.games++;saved.total+=score;saved.correct+=correct;saveStats();
+if(score>best){best=score;localStorage.setItem("iraqBest",best)}
+$("resultEmoji").textContent=completed?"🏆":"💔";
+$("resultTitle").textContent=completed?"أسطورة العراق!":"انتهت اللعبة!";
+$("resultText").innerHTML=`نتيجتك: <strong>${score}</strong> نقطة<br>الإجابات الصحيحة: ${correct} من ${list.length}<br>أفضل نتيجة: ${best} نقطة<br>${completed?"أكملت جميع الأسئلة، بطل!":"حاول مرة ثانية حتى تحقق نتيجة أفضل!"}`;
+createResultCard(completed);
+}
+
+function createResultCard(completed){
+const canvas=document.createElement("canvas");
+canvas.width=1080;canvas.height=1920;
+const ctx=canvas.getContext("2d");
+const bg=ctx.createLinearGradient(0,0,1080,1920);
+bg.addColorStop(0,"#681326");
+bg.addColorStop(.48,"#230914");
+bg.addColorStop(1,"#08050b");
+ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1920);
+
+ctx.strokeStyle="rgba(255,201,92,.35)";
+ctx.lineWidth=5;ctx.strokeRect(55,55,970,1810);
+
+for(let i=0;i<9;i++){
+ctx.beginPath();
+ctx.arc((i%3)*570+80,Math.floor(i/3)*650+120,90+i*12,0,Math.PI*2);
+ctx.strokeStyle="rgba(255,255,255,.045)";
+ctx.lineWidth=5;ctx.stroke();
+}
+
+ctx.textAlign="center";ctx.direction="rtl";
+ctx.fillStyle="#ffc95c";
+ctx.font="bold 60px Tahoma, Arial";
+ctx.fillText("تحدّي العراق 3D",540,300);
+
+ctx.fillStyle="#ffffff";
+ctx.font="bold 66px Tahoma, Arial";
+ctx.fillText(completed?"أكملت التحدّي!":"انتهى التحدّي",540,500);
+
+ctx.fillStyle=completed?"#ffc95c":"#ff7181";
+ctx.font="bold 180px Tahoma, Arial";
+ctx.fillText(String(score),540,850);
+
+ctx.fillStyle="#ffffff";
+ctx.font="bold 58px Tahoma, Arial";
+ctx.fillText("نقطة",540,950);
+
+ctx.fillStyle="#f4dfe2";
+ctx.font="48px Tahoma, Arial";
+ctx.fillText("الإجابات الصحيحة",540,1160);
+
+ctx.fillStyle="#ffc95c";
+ctx.font="bold 72px Tahoma, Arial";
+ctx.fillText(`${correct} / ${list.length}`,540,1270);
+
+ctx.fillStyle="#f4dfe2";
+ctx.font="42px Tahoma, Arial";
+ctx.fillText("هل تستطيع تحطيم هذه النتيجة؟",540,1480);
+
+ctx.fillStyle="#ffc95c";
+ctx.font="bold 45px Tahoma, Arial";
+ctx.fillText("تحدّى أصدقاءك",540,1570);
+
+ctx.strokeStyle="rgba(255,201,92,.6)";
+ctx.lineWidth=3;ctx.beginPath();
+ctx.moveTo(180,1650);ctx.lineTo(900,1650);ctx.stroke();
+
+ctx.fillStyle="#ffffff";
+ctx.font="bold 38px Tahoma, Arial";
+ctx.fillText("تطوير وبرمجة",540,1735);
+
+ctx.fillStyle="#ffc95c";
+ctx.font="bold 48px Tahoma, Arial";
+ctx.fillText("المهندس علي أسعد",540,1805);
+
+resultImageUrl=canvas.toDataURL("image/png");
+$("sharePreview").src=resultImageUrl;
+$("sharePreview").classList.remove("hidden");
+$("shareNote").textContent="بطاقة نتيجتك جاهزة للمشاركة على الستوري";
+}
+
+async function shareResult(){
+if(!resultImageUrl)return;
+try{
+const blob=await (await fetch(resultImageUrl)).blob();
+const file=new File([blob],"iraq-challenge-result.png",{type:"image/png"});
+if(navigator.canShare&&navigator.canShare({files:[file]})){
+await navigator.share({
+files:[file],
+title:"نتيجتي في تحدّي العراق 3D",
+text:`حققت ${score} نقطة في تحدّي العراق 3D!`
+});
+}else{
+saveResultImage();
+$("shareNote").textContent="تم تجهيز الصورة؛ احفظها ثم شاركها من معرض الصور.";
+}
+}catch(e){
+if(e.name!=="AbortError"){
+$("shareNote").textContent="تعذّرت المشاركة المباشرة. احفظ الصورة وشاركها من معرض الصور.";
+}
+}
+}
+
+function saveResultImage(){
+if(!resultImageUrl)return;
+const a=document.createElement("a");
+a.href=resultImageUrl;
+a.download="نتيجتي-تحدي-العراق.png";
+document.body.appendChild(a);
+a.click();a.remove();
+$("shareNote").textContent="إذا ما انحفظت الصورة تلقائياً، اضغط مطولاً على البطاقة واختر حفظ في الصور.";
+}
+
+renderStats();
+</script>
+</body>
+</html>
