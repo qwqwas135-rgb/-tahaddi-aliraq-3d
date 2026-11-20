@@ -1,0 +1,38 @@
+
+workflows:
+  android-workflow:
+    name: Tahaddi Iraq 3D Android
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      vars:
+        PACKAGE_NAME: "com.tahaddiiraq.game"
+      node: 20
+      java: 17
+
+    scripts:
+      - name: Prepare game files
+        script: |
+          mkdir -p www
+          cp index.html www/index.html
+
+      - name: Install dependencies
+        script: |
+          npm install
+
+      - name: Create Android project
+        script: |
+          npx cap add android
+
+      - name: Sync Android project
+        script: |
+          npx cap sync android
+
+      - name: Build Android App Bundle
+        script: |
+          cd android
+          ./gradlew bundleRelease
+
+    artifacts:
+      - android/app/build/outputs/bundle/release/app-release.aab
