@@ -9,7 +9,7 @@ workflows:
       vars:
         PACKAGE_NAME: "com.tahaddiiraq.game"
       node: 20
-      java: 17
+      java: 21
 
     scripts:
       - name: Prepare game files
