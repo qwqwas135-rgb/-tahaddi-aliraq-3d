@@ -1,0 +1,9 @@
+
+{
+  "appId": "com.tahaddiiraq.game",
+  "appName": "تحدي العراق 3D",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
